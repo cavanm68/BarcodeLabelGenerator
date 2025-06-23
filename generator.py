@@ -162,33 +162,6 @@ def generate_labels(
             raise RuntimeError(f"Failed to generate barcode {barcode_type} for {sku}: {e}")
 
     
-    def wrap_text_to_lines(text, font_name, font_size, max_width, max_lines):
-        words = text.split()
-        lines = []
-        current_line = ""
-
-        for word in words:
-            trial_line = f"{current_line} {word}".strip()
-            width = stringWidth(trial_line, font_name, font_size)
-
-            if width <= max_width:
-                current_line = trial_line
-            else:
-                lines.append(current_line)
-                current_line = word
-                if len(lines) == max_lines - 1:
-                    break
-
-        lines.append(current_line)
-
-        if len(lines) == max_lines and ' '.join(words[len(' '.join(lines[:-1]).split()):]) != lines[-1]:
-            # Truncate the last line with ellipsis
-            truncated = lines[-1]
-            while stringWidth(truncated + '...', font_name, font_size) > max_width and truncated:
-                truncated = truncated[:-1]
-            lines[-1] = truncated + '...'
-
-        return lines
 
     def generate_scaled_qr(data, box_size=10, border=1):
         qr = qrcode.QRCode(
