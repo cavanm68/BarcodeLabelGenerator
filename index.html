@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	
+	<link rel="icon" type="image/x-icon" href="./static/favicon.ico">
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<title>Free Bulk SKU Barcode Generator – Print Labels Online</title>
+	<style>
+body {
+	font-family: sans-serif;
+	padding: 2em;
+}
+form {
+	display: flex;
+	gap: 2em;
+}
+#custom_dpi {
+display: block;
+margin-top: 4px;
+width: 100%;
+}
+
+input[type="number"]#rows,
+input[type="number"]#columns {
+width: 175px; 
+/* rows and columns span. this spaces out the rest of the entry fields aswell*/
+}
+
+fieldset {
+	border: 1px solid #ccc;
+	padding: 1em;
+	border-radius: 6px;
+	margin-bottom: 1em;
+	flex: 1;
+	}
+	fieldset legend {
+	font-weight: bold;
+	padding: 0 0.5em;
+}
+label {
+	margin-top: 0.5em;
+	display: block;
+}
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+	width: 100%;
+	padding: 0.3em;
+	margin-bottom: 0.8em;
+	box-sizing: border-box;
+}
+textarea {
+	resize: vertical;
+}
+.preview-panel {
+	position: sticky;
+	top: 2rem;
+	align-self: start;
+	background: #f9f9f9;
+	padding: 1em;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	max-height: 90vh;
+	overflow: auto;
+	text-align: center;
+}
+#preview {
+	display: inline-block;
+	margin-top: 1em;
+	max-width: 100%;
+	border: 1px dashed #ccc;
+}
+.disabled {
+	opacity: 0.5;
+	}
+	.form-row {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+}
+.full-width {
+  flex: 1 0 100%;
+  max-width: 100%;
+}
+.form-row > div {
+	flex: 1;
+	min-width: 120px;
+}
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+	width: 100%;
+	max-width: 200px;
+}
+.custom-file {
+	position: relative;
+	display: inline-block;
+	max-width: 200px;
+}
+.custom-file-label {
+	display: inline-block;
+	background: #eee;
+	padding: 0.4em 0.6em;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	cursor: pointer;
+	width: 100%;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	box-sizing: border-box;
+	vertical-align: middle;
+	margin-top: 1.35em; 
+}
+#sku_list {
+	width: 100%;
+	min-width: 100%;
+	resize: both;
+	min-height: 6em;
+	box-sizing: border-box;
+	font-family: monospace;
+}
+.offset-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.offset-control {
+  flex: 1;
+}
+
+.offset-input {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.offset-input button {
+  padding: 0 8px;
+  height: 100%; 
+  line-height: 1;
+  font-size: 1.1em;
+  position: relative;
+  top: -1px; 
+}
+
+.offset-input input[type="number"] {
+  width: 32px;
+}
+
+
+</style>
+
+</head>
+<body>
+	<a href="https://moriarty-services.com" target="_blank" style="position: absolute; top: 10px; left: 10px; text-decoration: none; font-size: 14px; color: #555;">Try SellThru today!</a>
+	<a href="https://github.com/cavanm68/BarcodeLabelGenerator" target="_blank" style="position: absolute; top: 10px; right: 10px; text-decoration: none; font-size: 14px; color: #555;">Download it on GitHub</a>
+
+	<h1>Generate SKU Barcode Labels Online</h1>
+	<div style="max-width: 720px; padding: 1em 0; font-size: 1rem; color: #444;">
+	<p><strong>BarcodeLabelGenerator</strong> is a free, flexible barcode label generator built for ecommerce systems and warehouse workflows. Originally developed for eBay inventory, it supports bulk SKU generation, manual entry, and multiple layout styles optimized for any label printer.</p>
+	<p>Print scannable labels with barcodes, customize sizing, DPI, layout modes and export as a ready-to-print PDF — no signup required. No ads, enjoy free open source software.</p>
+	</div>
+
+
+	<div style="display: flex; gap: 2em; align-items: flex-start;">
+	<form id="form_row" action="/generate" method="POST" enctype="multipart/form-data">
+	<input type="hidden" name="layout_reversed" id="layout_reversed" value="false">
+	<div style="flex: 2;">
+<fieldset>
+	<legend>Label Content</legend>
+	<div class="form-row">
+	<div>
+	<label for="rng_charset">SKU RNG Character Set:</label>
+	<select name="rng_charset" id="rng_charset">
+	<option value="digits">Digits (0-9)</option>
+	<option value="hex">Hex (0-9, A-F)</option>
+	<option value="code39">Code 39 (A-Z, 0-9, -.$/+%)</option>
+	<option value="base64">Base64 (A-Z, a-z, 0-9, + /)</option>
+	<option value="ascii">ASCII (A-Z, a-z, 0-9, symbols)</option>
+		</select>
+	</div>
+	<div>
+	<label for="barcode_type">Barcode Type:</label>
+	<select name="barcode_type" id="barcode_type" required>
+	<option value="qrcode">QR Code</option>
+	<option value="datamatrix">Data Matrix</option>
+	<option value="code128">Code 128</option>
+	<option value="code39">Code 39</option>
+	<option value="interleaved2of5">ITF (I2of5)</option>
+	<option value="upca">UPC-A</option>
+	<option value="upce">UPC-E</option>
+	<option value="ean13">EAN-13</option>
+	<option value="ean8">EAN-8</option>
+	<option value="none" hidden></option>
+	</select>
+	</div>
+	</div>
+	<div class="form-row">
+	<label style="flex: 1;">
+	 <input type="checkbox" id="no_symbols" name="no_symbols"> Exclude symbols
+	</label>
+	<label style="flex: 1;">
+	  <input type="checkbox" id="no_barcode" name="no_barcode"> Text Only (no barcode)
+	</label>
+	  </div>
+	  <br>
+	<div class="form-row">
+	<div style="flex: 1;">
+	  <label for="text_size">SKU Size:</label>
+	  <input type="range" id="text_size" min="5" max="40" value="14" step="1">
+	</div>
+	<div style="flex: 1;">
+	  <label for="barcode_size">Barcode Size:</label>
+	  <input type="range" id="barcode_size" name="barcode-size" min="10" max="120" value="100" step="1">
+	</div>
+	  </div>
+	
+
+
+
+</fieldset>
+
+
+<fieldset>
+	<legend>Label Dimensions</legend>
+	<div class="form-row">
+	<div>
+	<label for="label_units">Label Size Units:</label>
+	<select name="label_units" id="label_units">
+	<option value="in">Inch (in)</option>
+	<option value="mm">Millimeter (mm)</option>
+	<option value="cm">Centimeter (cm)</option>
+	</select>
+	</div>
+	<div>
+	<div style="display: flex; justify-content: space-between; align-items: center;">
+	<label id="layout_label" for="layout_mode">Layout:</label>
+	<div id="layout_reverse_container">
+	  <button id="layout_reverse" title="Swap Text & Barcode" style="background: none; border: none; cursor: pointer;">
+		🔄
+	  </button>
+	</div>
+	 </div>		  
+	  <select name="layout_mode" id="layout_mode">
+		<option value="stacked">Stacked</option>
+		<option value="side_by_side">Side-by-Side</option>
+		<option value="barcodeonly">Only Barcodes</option>
+		<option value="textonly">Only Text</option>
+	  </select>
+	</div>
+	</div>
+	<div class="form-row">
+	<div>
+	<label for="label_width">↔ Label Width:</label>
+	<input type="number" name="label_width" id="label_width" value="4" min="0" required>
+	</div>
+	<div>
+	<label for="label_height">↕ Label Height:</label>
+	<input type="number" name="label_height" id="label_height" value="6" min="0" required>
+	</div>
+	</div>
+	<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+	<label><input type="checkbox" id="single_sku" name="single_sku" checked> Single SKU per label</label>
+	<span id="skuCountDisplay" style="font-size: 0.85em; color: gray;">Total SKU Count:</span>
+	</div>
+
+	<fieldset id="grid_options" class="disabled" disabled>
+	<div style="margin-top: 5px;">
+	
+	</div>
+
+	<div class="form-row">
+		<div>
+	<label for="rows">Rows per label:</label>
+	<input type="number" id="rows" name="rows" value="1" min="1" max="64">
+		</div>
+		<div>
+	<label for="columns">Columns per label:</label>
+	<input type="number" id="columns" name="columns" value="1" min="1" max="64">
+		</div>
+	</div>
+	
+	
+	</fieldset>
+
+
+	<div class="form-row" style="justify-content: center; gap: 40px; margin-top: 12px;">
+
+	<div style="display: flex; flex-direction: column; align-items: center;">
+	
+		<label for="x_offset">X Offset</label>
+		<div style="display: flex; align-items: center; gap: 6px;">
+		<button
+			type="button"
+			onclick="changeOffset('x_offset', -1)"
+			style="height: 26px; padding: 0 8px; font-size: 1.1em; line-height: 1; position: relative; top: -5px;">
+			←
+		</button>
+		<input type="number" id="x_offset" name="x_offset" value="0" step="1" style="width: 60px; text-align: center;">
+		<button
+			type="button"
+			onclick="changeOffset('x_offset', 1)"
+			style="height: 26px; padding: 0 8px; font-size: 1.1em; line-height: 1; position: relative; top: -5px;">
+			→
+		</button>
+		
+		</div>
+	</div>
+
+
+	<div style="display: flex; flex-direction: column; align-items: center;">
+		<label for="y_offset">Y Offset</label>
+		<div style="display: flex; align-items: center; gap: 6px;">
+		<button
+			type="button"
+			onclick="changeOffset('y_offset', -1)"
+			style="height: 26px; padding: 0 8px; font-size: 1.1em; line-height: 1; position: relative; top: -5px;">
+			↓
+		</button>
+		<input type="number" id="y_offset" name="y_offset" value="0" step="1" style="width: 60px; text-align: center;">
+		<button
+			type="button"
+			onclick="changeOffset('y_offset', 1)"
+			style="height: 26px; padding: 0 8px; font-size: 1.1em; line-height: 1; position: relative; top: -5px;">
+			↑
+		</button>
+		</div>
+	</div>
+	</div>
+<div style="text-align: right; font-size: 0.85em; margin-bottom: -6px; cursor: pointer; color: #007bff;" onclick="resetOffsets()">
+  Reset offsets
+</div>
+
+
+</fieldset>
+
+<fieldset>
+	<legend>Label Generation</legend>
+	<div class="form-row">
+	<div>
+		<label for="quantity">Number of Labels:</label>
+		<input type="number" name="quantity" id="quantity" value="10" min="1" required>
+	</div>
+	<div>
+		<label for="rng_length">SKU Length:</label>
+		<input type="number" name="rng_length" id="rng_length" value="5" min="1" required>
+	</div>
+	</div>
+	<div class="form-row">
+	<div>
+		<label for="prefix">Prefix:</label>
+		<input type="text" name="prefix" id="prefix">
+	</div>
+	<div>
+		<label for="suffix">Suffix:</label>
+		<input type="text" name="suffix" id="suffix">
+	</div>
+	</div>
+	<div class="form-row">
+	<div style="flex: 1;">
+	  <label for="dpi">DPI:</label>
+	  <select id="dpi">
+		<option value="203">203</option>
+		<option value="300" selected>300</option>
+		<option value="600">600</option>
+		<option value="custom">Custom</option>
+	  </select>
+	</div>
+	  
+	<div style="flex: 1;">
+	  <label for="dpi_quality_box">Print Quality:</label>
+	  <div id="dpi_quality_box" style="
+		margin-top: 4px;
+		border: 1px solid #000;
+		height: 20px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-weight: bold;
+		font-size: 1.2em;
+	  ">
+	<div id="dpi_quality_label">Standard</div>
+	</div>
+	<input type="number" id="custom_dpi" placeholder="Enter DPI" min="50" max="2400"
+	  style="display: none; width: 100%; box-sizing: border-box;" />
+	  </div>
+	</div>
+</fieldset>
+
+<fieldset>
+<legend>Existing SKU Data</legend>
+<div style="display: flex; gap: 1em; align-items: center; margin-bottom: 0.5em;">
+  <label>
+    <input type="checkbox" id="use_manual_preview">
+    Use existing SKU data
+  </label>
+  <label>
+    <input type="checkbox" id="repeat_skus" name="repeat_skus">
+    Repeat SKUs
+  </label>
+</div>
+
+	<br>
+	<label for="sku_list">Manual SKU Input (comma or space separated):</label>
+	<textarea id="sku_list" name="sku_list" rows="3" placeholder="e.g. ABC123, DEF456, GHI789" maxlength="1000000"></textarea>
+<div class="form-row">
+<div class="custom-file">
+	<label for="csv_upload" class="custom-file-label">
+	<span id="csv_filename">Choose CSV File</span>
+	</label>
+	<input type="file" id="csv_upload" name="csv_upload" accept=".csv" style="display: none;">
+</div>
+	<div>
+	<label for="csv_column">CSV Column to Use:</label>
+	<select id="csv_column" disabled>
+		<option value="">(no file loaded)</option>
+	</select>
+	</div>
+</div>
+	</fieldset>
+  <div class="form-row" style="justify-content: flex-end; gap: 10px; margin-top: 10px;"></div>
+	<button id="generate" type="submit">Generate PDF</button>
+	<button id="print" type="button">Print</button>
+</div>
+<div class="preview-panel">
+	<h3>Preview</h3>
+	<svg id="preview"></svg>
+</div>
+	</div>
+<div id="loadingOverlay" style="
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255,255,255,0.85);
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 2em;
+  color: #333;
+  font-weight: bold;
+  pointer-events: all;
+">
+  <div style="text-align: center;">
+    Loading...<br>
+    <span style="display: block; font-size: 0.6em; font-weight: normal; margin-top: 0.7em; color: #666;">
+    1D barcodes may take a while
+    </span>
+</div>
+</body>
+<script>
+
+
+const preview = document.getElementById("preview");
+const widthInput = document.getElementById("label_width");
+const heightInput = document.getElementById("label_height");
+const singleSkuCheckbox = document.getElementById("single_sku");
+const gridOptions = document.getElementById("grid_options");
+const labelUnits = document.getElementById("label_units");
+const rngLengthInput = document.getElementById("rng_length");
+const barcodeSelect = document.getElementById("barcode_type");
+const prefixInput = document.getElementById("prefix");
+const suffixInput = document.getElementById("suffix");
+const charsetSelect = document.getElementById("rng_charset");
+const manualSkuInput = document.getElementById("sku_list");
+const barcodeSizeSlider = document.getElementById("barcode_size");
+const rowsInput = document.getElementById("rows");
+const columnsInput = document.getElementById("columns");
+const manualPreviewCheckbox = document.getElementById("use_manual_preview");
+const quantityInput = document.getElementById("quantity");
+const excludeSymbolsCheckbox = document.getElementById("no_symbols");
+const layoutSelect = document.getElementById("layout_mode");
+const noBarcodeCheckbox = document.getElementById("no_barcode");
+let	layoutReversed = false;
+let shouldRerollSkus = true;
+let truncateTemplates = [];
+let lastGeneratedSkus = []; 
+const oneDBarcodes = [
+  "upca",
+  "upce",
+  "ean13",
+  "ean8",
+  "interleaved2of5",
+  "code39",
+  "code128"
+];
+const digitRules = {
+	"upca": [11],
+	"upce": [7],
+	"ean13": [12],
+	"ean8": [7],
+	"interleaved2of5": [2, 32],
+	"code39": [1, 48],
+	"code128": [1, 64],
+	"qrcode": [1, 64],
+	"datamatrix": [1, 64],
+};
+
+
+
+function updateQuantityInputState() {
+  const isManual = manualPreviewCheckbox.checked;
+  const isRepeat = document.getElementById("repeat_skus").checked;
+
+  // Unlock quantity input for repeat skus
+  quantityInput.disabled = isManual && !isRepeat;
+}
+
+function resetOffsets() {
+  document.getElementById("x_offset").value = 0;
+  document.getElementById("y_offset").value = 0;
+  debouncedUpdatePreview();
+}
+
+function rerollSkusIfNeeded(rows, cols) {
+    if (shouldRerollSkus || lastGeneratedSkus.length !== rows * cols) {
+        lastGeneratedSkus = Array.from({ length: rows * cols }, () => cleanPreviewChars(generateSampleSku()));
+        shouldRerollSkus = false;
+    }
+}
+
+function sanitizePositiveInt(value, fallback = 1) {
+  const n = parseInt(value);
+  return (isNaN(n) || n < 1) ? fallback : n;
+}
+
+function autoScaleSizes() {
+  const rows = parseInt(rowsInput.value) || 1;
+  const cols = parseInt(columnsInput.value) || 1;
+  const barcodeType = barcodeSelect.value;
+  const is1D = oneDBarcodes.includes(barcodeType);
+  const layoutMode = layoutSelect.value;
+
+  // Define min/max for 1d and 2d
+  const barcodeMin = is1D ? 5 : 5;
+  const textMin = 8;
+  const barcodeBaseMax = is1D ? 65 : 120;
+  const textBaseMax = 60;
+
+
+  let barcodeMax;
+  if (is1D && layoutMode === "side_by_side") {
+    const colFactor = Math.max(1, cols);
+    barcodeMax = Math.max(barcodeMin + 2, Math.round(barcodeBaseMax / Math.pow(colFactor, 0.80)));
+  } else {
+    const gridFactor = Math.max(1, rows * cols);
+    barcodeMax = is1D
+      ? Math.max(barcodeMin + 2, Math.round(barcodeBaseMax / Math.pow(gridFactor, 0.80)))
+      : Math.max(barcodeMin + 10, Math.round(barcodeBaseMax / Math.pow(gridFactor, 0.58)));
+  }
+  const textMax = Math.max(textMin + 2, Math.round(textBaseMax / Math.sqrt(rows * cols)));
+
+  barcodeSizeSlider.min = barcodeMin;
+  barcodeSizeSlider.max = barcodeMax;
+  document.getElementById("barcode_size").min = barcodeMin;
+  document.getElementById("barcode_size").max = barcodeMax;
+  document.getElementById("text_size").min = textMin;
+  document.getElementById("text_size").max = textMax;
+
+  // Clamp current values to new min/max
+  if (parseInt(barcodeSizeSlider.value) > barcodeMax) barcodeSizeSlider.value = barcodeMax;
+  if (parseInt(barcodeSizeSlider.value) < barcodeMin) barcodeSizeSlider.value = barcodeMin;
+  if (parseInt(document.getElementById("barcode_size").value) > barcodeMax) document.getElementById("barcode_size").value = barcodeMax;
+  if (parseInt(document.getElementById("barcode_size").value) < barcodeMin) document.getElementById("barcode_size").value = barcodeMin;
+  if (parseInt(document.getElementById("text_size").value) > textMax) document.getElementById("text_size").value = textMax;
+  if (parseInt(document.getElementById("text_size").value) < textMin) document.getElementById("text_size").value = textMin;
+}
+
+labelUnits.dispatchEvent(new Event("change"));
+	const CHARSETS = {
+	digits: "0123456789",
+	hex: "0123456789ABCDEF",
+	code39: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-. $/+%",
+	base64: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+	ascii: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!"#$%:\'()*+,-./:;=?@[]^_~'
+
+};
+const digitOnlyBarcodes = ["upca", "upce", "ean13", "ean8", "interleaved2of5"];
+const code39SS = ["digits", "hex", "code39"];
+
+
+function debounce(func, delay) {
+	let timeout;
+	return (...args) => {
+		clearTimeout(timeout);
+		timeout = setTimeout(() => func.apply(this, args), delay);
+	};
+}
+
+
+function togglePrefixSuffixAvailability() {
+	const barcodeType = barcodeSelect.value;
+	const isDigitOnly = digitOnlyBarcodes.includes(barcodeType);
+
+	prefixInput.disabled = isDigitOnly;
+	suffixInput.disabled = isDigitOnly;
+
+	prefixInput.style.opacity = isDigitOnly ? "0.5" : "1";
+	suffixInput.style.opacity = isDigitOnly ? "0.5" : "1";
+
+	if (isDigitOnly) {
+		prefixInput.value = "";
+		suffixInput.value = "";
+	}
+}
+
+function updateLabelCount() {
+  const isManualPreview = manualPreviewCheckbox.checked;
+  const isSingleSku = singleSkuCheckbox.checked;
+
+  const skuCount = getSkuCount();
+  document.getElementById("skuCountDisplay").innerText = `Total SKU Count: ${skuCount}`;
+
+  const rows = parseInt(rowsInput.value) || 1;
+  const columns = parseInt(columnsInput.value) || 1;
+  const slotsPerPage = rows * columns;
+
+
+
+  if (isManualPreview) {
+    if (isSingleSku) {
+      quantityInput.value = skuCount;
+    } else {
+      const labelCount = Math.ceil(skuCount / slotsPerPage);
+      quantityInput.value = labelCount;
+    }
+  }
+}
+
+
+
+
+function toggleReverseButton() {
+  const layout = document.getElementById("layout_mode").value;
+  const container = document.getElementById("layout_reverse_container");
+  const shouldShow = layout === "stacked" || layout === "side_by_side";
+  container.style.display = shouldShow ? "block" : "none";
+}
+
+
+
+
+function enforceRngLengthRules() {
+    if (document.getElementById("use_manual_preview").checked) return;
+
+    const selected = barcodeSelect.value;
+    const allowed = digitRules[selected];
+
+    // Always reset step back to 1 by default
+    rngLengthInput.step = 1;
+
+    // Lock charset for digit-only types
+    if (digitOnlyBarcodes.includes(selected)) {
+        charsetSelect.value = "digits";
+        charsetSelect.disabled = true;
+    } else if (selected === "code39") {
+        for (let option of charsetSelect.options) {
+            option.disabled = !code39SS.includes(option.value);
+        }
+        if (!code39SS.includes(charsetSelect.value)) {
+            charsetSelect.value = "code39";
+        }
+        charsetSelect.disabled = false;
+    } else {
+        for (let option of charsetSelect.options) {
+            option.disabled = false;
+        }
+        charsetSelect.disabled = false;
+    }
+
+	if (allowed) {
+		rngLengthInput.min = Math.min(...allowed);
+		rngLengthInput.max = Math.max(...allowed);
+
+		let validLength = sanitizePositiveInt(rngLengthInput.value);
+
+		if (allowed.length === 1) {
+			rngLengthInput.value = allowed[0];
+		} else if (selected === "interleaved2of5") {
+			rngLengthInput.step = 2;
+
+			if (validLength % 2 !== 0) validLength -= 1;
+			if (validLength < allowed[0]) validLength = allowed[0];
+			if (validLength > allowed[1]) validLength = allowed[1];
+
+			rngLengthInput.value = validLength;
+		} else {
+			if (validLength < allowed[0] || validLength > allowed[1]) {
+				rngLengthInput.value = allowed[0];
+			} else {
+				rngLengthInput.value = validLength;
+			}
+		}
+	
+
+    } else {
+        rngLengthInput.removeAttribute("min");
+        rngLengthInput.removeAttribute("max");
+        rngLengthInput.value = sanitizePositiveInt(rngLengthInput.value, 5);
+    }
+
+    prefixInput.disabled = digitOnlyBarcodes.includes(selected);
+    suffixInput.disabled = digitOnlyBarcodes.includes(selected);
+}
+
+
+
+
+window.addEventListener("load", () => {
+	const dpiSelect = document.getElementById("dpi");
+	const customDpiInput = document.getElementById("custom_dpi");
+	rngLengthInput.value = sanitizePositiveInt(rngLengthInput.value, 5).toString();
+    quantityInput.value = sanitizePositiveInt(quantityInput.value, 1);
+
+	if (dpiSelect.value !== "custom") dpiSelect.value = "300";
+	customDpiInput.style.display = "none";
+
+	labelUnits.dispatchEvent(new Event("change"));
+
+	toggleSizeSliders(); 
+	toggleDpiInputs();            
+	enforceRngLengthRules();
+	togglePrefixSuffixAvailability();
+	toggleGridOptions();
+	toggleReverseButton();
+	syncLayoutAndBarcodeState();
+	autoScaleSizes();
+	updateSkuCounter();
+	updateExcludeSymbolsState();
+	updatePreview();
+});
+
+
+const reverseBtn = document.getElementById("layout_reverse");
+const reverseInput = document.getElementById("layout_reversed");
+
+reverseBtn.addEventListener("click", () => {
+  const current = reverseInput.value === "true";
+  const next = !current;
+  reverseInput.value = next.toString();
+  debouncedUpdatePreview();
+});
+
+
+const debouncedUpdatePreview = debounce(updatePreview, 100);
+
+document.getElementById("layout_reverse").addEventListener("click", (e) => {
+	e.preventDefault();
+	const layout = document.getElementById("layout_mode").value;
+	if (layout === "stacked" || layout === "side_by_side") {
+		layoutReversed = !layoutReversed;
+		debouncedUpdatePreview(); 
+	}
+});
+
+document.getElementById("form_row").addEventListener("submit", function (e) {
+	e.preventDefault();
+	generatePDF(true);      //  send JSON
+});
+
+document.getElementById("print").addEventListener("click", function () {
+  generatePDF(true); 
+});
+
+document.getElementById("no_barcode").addEventListener("change", function () {
+  const layoutMode = document.getElementById("layout_mode");
+  layoutMode.value = this.checked ? "textonly" : "stacked";
+
+  syncLayoutAndBarcodeState();
+
+
+  const isTextOnly = (layoutMode.value === "textonly");
+  barcodeSelect.disabled = isTextOnly;
+  barcodeSizeSlider.disabled = isTextOnly;
+
+  
+  toggleReverseButton();
+  debouncedUpdatePreview();
+});
+
+
+
+rngLengthInput.addEventListener("input", () => {
+    const barcodeType = barcodeSelect.value;
+    let val = sanitizePositiveInt(rngLengthInput.value);
+    if (barcodeType === "interleaved2of5") { // ITF must be even
+        if (val % 2 !== 0) val += 1;
+    }
+	shouldRerollSkus = true;
+    rngLengthInput.value = val;
+    updatePreview();
+});
+
+
+document.getElementById("csv_upload").addEventListener("change", function (e) {
+	const file = e.target.files[0];
+	const filenameSpan = document.getElementById("csv_filename");
+	if (!file) {
+	filenameSpan.textContent = "Choose CSV File";
+	return;
+	}
+	const lines = file ? file.name.split(".") : [];
+	const shortName = file.name.length > 15 ? file.name.slice(0, 22) + "..." : file.name;
+	filenameSpan.textContent = shortName;
+	const reader = new FileReader();
+	reader.onload = function (event) {
+	const lines = event.target.result.split(/\r?\n/).filter(l => l.trim() !== "");
+	const header = lines[0].split(",");
+	const select = document.getElementById("csv_column");
+	select.innerHTML = '<option value="">Select...</option>';
+	header.forEach((col, i) => {
+		const opt = document.createElement("option");
+		opt.value = i;
+		opt.textContent = `${col} (column ${i + 1})`;
+		select.appendChild(opt);
+	});
+	select.disabled = false;
+	csvDataRows = lines.slice(1).map(row => row.split(","));
+	updatePreview();
+	};
+	reader.readAsText(file);
+});
+
+document.getElementById("csv_column").addEventListener("change", function () {
+	const selectedCol = parseInt(this.value);
+	if (isNaN(selectedCol)) return;
+			document.getElementById("sku_list").value = "";
+			const skus = csvDataRows
+	.map(row => (row[selectedCol] || "").trim())
+	.filter(s => s.length > 0);
+	document.getElementById("sku_list").value = skus.join(", ");
+	updatePreview();
+});
+
+	labelUnits.addEventListener("change", () => {
+	const unit = labelUnits.value;
+	let step;
+	if (unit === "in") step = 0.25;
+	else if (unit === "cm") step = 0.5;
+	else if (unit === "mm") step = 5;
+	else step = 0.25;
+	widthInput.step = step;
+	heightInput.step = step;
+	updatePreview(); 
+});
+
+function cleanPreviewChars(input) {
+	return input.replace(/[^\x20-\x7E\u00A0-\u2FFF\u3000-\uFFFF]/g, '');
+}
+
+function generateSampleSku() {
+	const charsetKey = charsetSelect.value;
+	const length = sanitizePositiveInt(rngLengthInput.value);
+	const excludeSymbols = document.getElementById("no_symbols").checked;
+	const prefix = document.getElementById("prefix").value || "";
+	const suffix = document.getElementById("suffix").value || "";
+	let charset = CHARSETS[charsetKey] || CHARSETS["digits"];
+	if (excludeSymbols) {
+	charset = charset.replace(/[^A-Za-z0-9]/g, '');
+	}
+	let result = "";
+	for (let i = 0; i < length; i++) {
+	result += charset.charAt(Math.floor(Math.random() * charset.length));
+	}
+	return result;
+}
+
+function preventNegativeInput(e) {
+	const input = e.target;
+	const min = parseFloat(input.min) || 0;
+	const val = parseFloat(input.value);
+	if (isNaN(val) || val < min) {
+	input.value = min;
+	updatePreview(); 
+	}
+}
+
+function escapeSvgText(str) {
+	return str
+	.replace(/&/g, "&amp;")
+	.replace(/</g, "&lt;")
+	.replace(/>/g, "&gt;")
+	.replace(/"/g, "&quot;")
+	.replace(/'/g, "&#039;");
+}
+
+function toggleManualSkuMode() {
+    const useManual = document.getElementById("use_manual_preview").checked;
+	const repeatSkusCheckbox = document.getElementById("repeat_skus");
+	repeatSkusCheckbox.disabled = !useManual;
+	repeatSkusCheckbox.parentElement.style.opacity = useManual ? "1" : "0.5";
+
+    charsetSelect.disabled = useManual;
+    rngLengthInput.disabled = useManual;
+
+	if (!useManual) {
+		rngLengthInput.value = sanitizePositiveInt(rngLengthInput.value, 5); 
+		quantityInput.value = sanitizePositiveInt(quantityInput.value, 1);
+	}
+
+
+    updatePreview();
+}
+
+
+
+function truncateTextToFit(text, fontSize, maxWidth) {
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS, "svg");
+    const tempText = document.createElementNS(svgNS, "text");
+
+    tempText.setAttribute("font-size", fontSize);
+    tempText.setAttribute("visibility", "hidden");
+    tempText.textContent = text;
+
+    svg.appendChild(tempText);
+    document.body.appendChild(svg);
+    const fullWidth = tempText.getBBox().width;
+    document.body.removeChild(svg);
+
+    if (fullWidth <= maxWidth) {
+        return { truncated: text, truncate: 0 };
+    }
+
+    const avgCharWidth = fullWidth / text.length;
+    const maxChars = Math.floor(maxWidth / avgCharWidth);
+
+    if (maxChars <= 3) {
+        return { truncated: "...", truncate: 0 };
+    } else if (maxChars === 4) {
+        return { truncated: text[0] + "..." + text[text.length - 1], truncate: 1 };
+    }
+
+    const sliceLen = Math.floor((maxChars - 3) / 2);
+    return { truncated: text.slice(0, sliceLen) + "..." + text.slice(-sliceLen), truncate: sliceLen };
+}
+
+function changeOffset(field, delta, event) {
+  event?.preventDefault();
+  event?.stopPropagation();
+
+  const input = document.getElementById(field);
+  if (!input) return;
+  input.value = parseInt(input.value) + delta;
+
+
+    updatePreview();
+}
+
+
+
+function updateDpiQualityLabel(dpi) {
+	const label = document.getElementById("dpi_quality_label");
+	if (dpi >= 600) label.textContent = "Best";
+	else if (dpi >= 300) label.textContent = "Good";
+	else label.textContent = "Standard";
+	}
+
+function toggleDpiInputs() {
+	const dpiValue = document.getElementById("dpi").value;
+	const customInput = document.getElementById("custom_dpi");
+	const qualityBox = document.getElementById("dpi_quality_box");
+
+
+	if (dpiValue === "custom") {
+		customInput.style.display = "block";
+		qualityBox.style.display = "none";
+		const dpi = parseInt(customInput.value) || 300;
+		updateDpiQualityLabel(dpi);
+	} else {
+		customInput.style.display = "none";
+		qualityBox.style.display = "flex";
+
+		const dpi = parseInt(dpiValue);
+		updateDpiQualityLabel(dpi);
+	}
+
+	updatePreview();
+}
+
+function toggleSizeSliders() {
+	const layout = document.getElementById("layout_mode").value;
+	const textSizeSlider = document.getElementById("text_size");
+	const barcodeSizeSlider = document.getElementById("barcode_size");
+
+	if (layout === "textonly") {
+		textSizeSlider.disabled = false;
+		barcodeSizeSlider.disabled = true;
+	} else if (layout === "barcodeonly") {
+		textSizeSlider.disabled = true;
+		barcodeSizeSlider.disabled = false;
+	} else {
+		textSizeSlider.disabled = false;
+		barcodeSizeSlider.disabled = false;
+	}
+}
+
+
+function updatePreview() {
+	const marginFactor = 0.7; // default fallback
+	const useManualPreview = document.getElementById("use_manual_preview").checked;
+	const rerollSkus = !useManualPreview
+	const barcodeType = barcodeSelect.value;
+	const textSize = parseFloat(document.getElementById("text_size").value) || 14;
+	const barcodeSize = parseFloat(document.getElementById("barcode_size").value) || 150;
+	const manualSkus = document.getElementById("sku_list").value
+		.split(/[\s,]+/)
+		.map(s => cleanPreviewChars(s.trim()))
+		.filter(s => s.length > 0);
+	const repeatSkus = document.getElementById("repeat_skus").checked;
+	const xOffset = parseInt(document.getElementById("x_offset").value) || 0;
+	const yOffset = parseInt(document.getElementById("y_offset").value) || 0;
+	truncateTemplates = [];
+	let expandedSkus = manualSkus;
+
+	if (useManualPreview && repeatSkus) {
+	const totalNeeded = (singleSkuCheckbox.checked)
+		? sanitizePositiveInt(quantityInput.value)
+		: sanitizePositiveInt(quantityInput.value) * sanitizePositiveInt(rowsInput.value) * sanitizePositiveInt(columnsInput.value);
+
+	if (manualSkus.length > 0) {
+		const repeatCount = Math.ceil(totalNeeded / manualSkus.length);
+		expandedSkus = Array.from({ length: totalNeeded }, (_, i) => manualSkus[i % manualSkus.length]);
+	}
+	}
+
+	const w = parseFloat(widthInput.value);
+	const h = parseFloat(heightInput.value);
+	const units = document.getElementById("label_units").value;
+	let dpi = parseInt(document.getElementById("dpi").value) || 300;
+	
+	if (document.getElementById("dpi").value === "custom") {
+		dpi = parseInt(document.getElementById("custom_dpi").value) || 300;
+	}
+
+	const scale = 50; // Always use fixed preview scale
+	updateDpiQualityLabel(dpi);
+
+	const UNIT_MULTIPLIERS = {
+		in: 1,
+		cm: 1 / 2.54,
+		mm: 1 / 25.4
+	};
+	const multiplier = UNIT_MULTIPLIERS[units] || 1;
+	const widthPx = w * multiplier * scale;
+	const heightPx = h * multiplier * scale;
+	const rows = Math.min(parseInt(document.getElementById("rows").value) || 1, 64);
+	const cols = Math.min(parseInt(document.getElementById("columns").value) || 1, 64);
+	const layoutMode = document.getElementById("layout_mode").value;
+	const labelWidth = widthPx / cols;
+	const labelHeight = heightPx / rows;
+	preview.setAttribute("width", widthPx);
+	preview.setAttribute("height", heightPx);
+
+	let svgContent = `<rect x="0" y="0" width="${widthPx}" height="${heightPx}" fill="#fff" stroke="#000"/>`;
+
+	const barcodeImageUrl = (layoutMode === "textonly") ? null : `./static/previews/${barcodeType.toLowerCase()}.png`;
+
+
+
+	for (let r = 0; r < rows; r++) {
+	for (let c = 0; c < cols; c++) {
+		const x = c * labelWidth + xOffset;
+		const y = r * labelHeight - yOffset;
+		const skuIndex = r * cols + c;
+		let rawSku = "";
+
+		if (useManualPreview && manualSkus.length > 0) {
+			rawSku = expandedSkus[skuIndex] || "";
+		} else {
+			rerollSkusIfNeeded(rows, cols);
+			rawSku = lastGeneratedSkus[skuIndex] || "";
+		}
+		const isDigitOnly = digitOnlyBarcodes.includes(barcodeType);
+		const fullSku = isDigitOnly ? rawSku : prefixInput.value + rawSku + suffixInput.value;
+		const truncInfo = truncateTextToFit(fullSku, textSize, labelWidth * 0.9);
+		truncateTemplates.push(truncInfo.truncate);
+
+		svgContent += `<rect x="${x}" y="${y}" width="${labelWidth}" height="${labelHeight}" fill="none" stroke="none"/>`;
+
+			
+		const colScale = cols > 4 ? 4 / cols : 1;
+		const rowScale = rows > 2 ? 2 / rows : 1;
+		let scaleFactor = Math.min(colScale, rowScale);
+
+		const isTextOnly = (layoutMode === "textonly");
+		const isBarcodeOnly = (layoutMode === "barcodeonly");
+		const isBoth = (layoutMode === "stacked" || layoutMode === "side_by_side");
+
+		if (isTextOnly) {
+		const fontSize = textSize;
+		const textY = y + (labelHeight + fontSize) / 2 - 2;
+		svgContent += `<text x="${x + labelWidth / 2}" y="${textY}" font-size="${fontSize}" text-anchor="middle" fill="#000">${escapeSvgText(fullSku)}</text>`;
+		}
+
+		else if (isBarcodeOnly) {
+		const barcodeHeight = barcodeSize * scaleFactor * 1.2;
+		const barcodeWidth = labelWidth * 0.7;
+		const barcodeX = x + (labelWidth - barcodeWidth) / 2;
+		const barcodeY = y + (labelHeight - barcodeHeight) / 2;
+
+		if (barcodeImageUrl) {
+			svgContent += `<image href="${barcodeImageUrl}" x="${barcodeX}" y="${barcodeY}" width="${barcodeWidth}" height="${barcodeHeight}" />`;
+		}
+		}
+
+		else if (layoutMode === "stacked") {
+			const tightnessScale = 0.9;
+			const previewBoost = 1 + 0.35 * (rows + cols - 2); // or Math.max(1, Math.sqrt(rows*cols)*0.5)
+			const barcodeHeight = barcodeSize * scaleFactor * previewBoost;
+			const fontSize = textSize;
+			const barcodeWidth = labelWidth * (0.5 + 0.3 * tightnessScale);
+			const barcodeX = x + (labelWidth - barcodeWidth) / 2;
+
+			const totalContentHeight = fontSize + 4 + 4 + barcodeHeight;  // text + spacing + barcode
+			const verticalStart = y + (labelHeight - totalContentHeight) / 2;
+
+			const textY = verticalStart + fontSize;
+			const barcodeY = textY + 4;
+			const layoutReversed = document.getElementById("layout_reversed").value === "true";
+			const reversedTextY = verticalStart + totalContentHeight - 4;
+			const reversedBarcodeY = reversedTextY - barcodeHeight - fontSize - 4;
+
+			const truncatedSku = truncateTextToFit(fullSku, fontSize, labelWidth * 0.9);
+
+			if (layoutReversed) {
+				if (barcodeImageUrl) {
+					svgContent += `<image href="${barcodeImageUrl}" x="${barcodeX}" y="${reversedBarcodeY}" width="${barcodeWidth}" height="${barcodeHeight}" />`;
+				}
+				svgContent += `<text x="${x + labelWidth / 2}" y="${reversedTextY}" font-size="${fontSize}" text-anchor="middle" fill="#000">${escapeSvgText(truncatedSku.truncated)}</text>`;
+			} else {
+				svgContent += `<text x="${x + labelWidth / 2}" y="${textY}" font-size="${fontSize}" text-anchor="middle" fill="#000">${escapeSvgText(truncatedSku.truncated)}</text>`;
+				if (barcodeImageUrl) {
+					svgContent += `<image href="${barcodeImageUrl}" x="${barcodeX}" y="${barcodeY}" width="${barcodeWidth}" height="${barcodeHeight}" />`;
+				}
+			}
+		}
+
+
+		else if (layoutMode === "side_by_side") {
+			const fontSize = textSize;
+			const rowScale = cols > 2 ? 2 / rows : 1;
+			const colScale = cols > 4 ? 4 / cols : 1;
+			const scaleFactor = colScale;
+
+			const barcodeWidth = labelWidth * 0.48 * scaleFactor;
+			const barcodeHeight = barcodeSize * 0.55 * scaleFactor;
+			const gap = 8;
+
+			const textMaxWidth = labelWidth - barcodeWidth - gap - 2;
+			const maxCharsPerLine = Math.max(1, Math.floor(textMaxWidth / (fontSize * 0.6)));
+			const maxLines = 3;
+			let lines = [];
+			for (let i = 0; i < fullSku.length && lines.length < maxLines; i += maxCharsPerLine) {
+				lines.push(fullSku.slice(i, i + maxCharsPerLine));
+			}
+			if (lines.length === maxLines && (fullSku.length > maxLines * maxCharsPerLine)) {
+				let lastLine = lines[lines.length - 1];
+				lines[lines.length - 1] = lastLine.length > 3 ? lastLine.slice(0, -3) + "..." : "...";
+			}
+
+			const textWidths = lines.map(line => line.length * fontSize * 0.6);
+			const charWidth = fontSize * 0.6;
+			const lineWidths = lines.map(line => line.length * charWidth);
+			const textBlockWidth = Math.max(...lineWidths);
+			const groupWidth = textBlockWidth + barcodeWidth + gap;
+			const groupStartX = x + (labelWidth - groupWidth) / 2;
+
+
+			const textBlockHeight = lines.length * fontSize;
+
+
+
+			const centerX = x + labelWidth / 2;
+
+			const centerY = y + labelHeight / 2;
+			const barcodeY = centerY - barcodeHeight / 2;
+			const textStartY = centerY - (textBlockHeight / 2);
+
+			if (!layoutReversed) {
+				const textStartX = groupStartX;
+				const barcodeX = textStartX + textBlockWidth + gap;
+
+				lines.forEach((line, i) => {
+					const textY = textStartY + fontSize + (i * fontSize);
+					svgContent += `<text x="${textStartX}" y="${textY}" font-size="${fontSize}" text-anchor="start" fill="#000">${escapeSvgText(line)}</text>`;
+				});
+
+				if (barcodeImageUrl) {
+					svgContent += `<image href="${barcodeImageUrl}" x="${barcodeX}" y="${barcodeY}" width="${barcodeWidth}" height="${barcodeHeight}" />`;
+				}
+			} else {
+				const barcodeX = groupStartX;
+				const textEndX = barcodeX + barcodeWidth + gap;
+				
+				if (barcodeImageUrl) {
+					svgContent += `<image href="${barcodeImageUrl}" x="${barcodeX}" y="${barcodeY}" width="${barcodeWidth}" height="${barcodeHeight}" />`;
+				}
+
+				lines.forEach((line, i) => {
+					const textY = textStartY + fontSize + (i * fontSize);
+					svgContent += `<text x="${textEndX}" y="${textY}" font-size="${fontSize}" text-anchor="start" fill="#000">${escapeSvgText(line)}</text>`;
+				});
+			}
+		}
+
+
+	}
+}
+
+
+	preview.innerHTML = svgContent;
+}
+
+
+let lastRows = 1;
+let lastCols = 1;
+
+function toggleGridOptions() {
+  const enabled = !singleSkuCheckbox.checked;
+  const gridFieldset = document.getElementById("grid_options");
+  gridFieldset.disabled = !enabled;
+  gridFieldset.classList.toggle("disabled", !enabled);
+
+  if (!enabled) {
+    // Save current grid values
+    lastRows = document.getElementById("rows").value;
+    lastCols = document.getElementById("columns").value;
+    document.getElementById("rows").value = 1;
+    document.getElementById("columns").value = 1;
+    // Set defaults for single SKU
+    barcodeSizeSlider.value = 100;
+    document.getElementById("barcode_size").value = 100;
+    document.getElementById("text_size").value = 14;
+	autoScaleSizes();
+  } else {
+    // Restore previous grid values
+    document.getElementById("rows").value = lastRows;
+    document.getElementById("columns").value = lastCols;
+    autoScaleSizes();
+  }
+}
+
+function updateExcludeSymbolsState() {
+  const charset = charsetSelect.value;
+  const excludeSymbolsCheckbox = document.getElementById("no_symbols");
+  
+  if (charset === "digits" || charset === "hex") {
+    excludeSymbolsCheckbox.checked = true;
+    excludeSymbolsCheckbox.disabled = true;
+  } else {
+    excludeSymbolsCheckbox.disabled = false;
+    //excludeSymbolsCheckbox.checked = false;
+  }
+}
+
+function syncLayoutAndBarcodeState() {
+  const layoutMode = layoutSelect.value;
+  const isTextOnly = (layoutMode === "textonly");
+  const isBarcodeOnly = (layoutMode === "barcodeonly");
+  const isBoth = (layoutMode === "stacked" || layoutMode === "side_by_side");
+
+  // Sync Text Only checkbox
+  noBarcodeCheckbox.checked = isTextOnly;
+
+  // Barcode controls
+  barcodeSelect.disabled = isTextOnly;
+  barcodeSizeSlider.disabled = isTextOnly;
+
+  // Text controls
+  const textSizeSlider = document.getElementById("text_size");
+  textSizeSlider.disabled = isBarcodeOnly;
+
+  toggleReverseButton();
+}
+
+
+
+function getSkuCount() {
+  const isManualPreview = manualPreviewCheckbox.checked;
+  const isRepeatSkus = document.getElementById("repeat_skus").checked;
+  const isSingleSku = singleSkuCheckbox.checked;
+
+  const rows = parseInt(rowsInput.value) || 1;
+  const columns = parseInt(columnsInput.value) || 1;
+  const quantity = sanitizePositiveInt(quantityInput.value);
+
+  if (isManualPreview && !isRepeatSkus) {
+    let skuInputRaw = manualSkuInput.value.trim();
+    let skuList = skuInputRaw.split(/\s+|,+/).filter(Boolean);
+    return skuList.length;
+  }
+
+  if (isSingleSku) {
+    return quantity;
+  } else {
+    return quantity * rows * columns;
+  }
+}
+
+
+
+
+function updateSkuCounter() {
+    let skuCount = getSkuCount();
+    document.getElementById("skuCountDisplay").innerText = `Total SKU Count: ${skuCount}`;
+}
+
+
+async function generatePDF() {
+	document.getElementById("loadingOverlay").style.display = "flex";
+	let skuList = manualSkuInput.value.trim().split(/\s+|,+/).filter(Boolean);
+	const data = {
+	barcode_type: document.getElementById("barcode_type").value,
+	quantity: parseInt(document.getElementById("quantity").value),
+	rng_length: parseInt(document.getElementById("rng_length").value),
+	prefix: document.getElementById("prefix").value || "",
+	suffix: document.getElementById("suffix").value || "",
+	label_width: parseFloat(document.getElementById("label_width").value),
+	label_height: parseFloat(document.getElementById("label_height").value),
+	rows: parseInt(document.getElementById("rows").value),
+	columns: parseInt(document.getElementById("columns").value),
+	rng_charset: document.getElementById("rng_charset").value,
+	repeat_skus: document.getElementById("repeat_skus").checked,
+	no_symbols: document.getElementById("no_symbols").checked,
+	text_size: parseInt(document.getElementById("text_size").value),
+	use_manual_preview: document.getElementById("use_manual_preview").checked,
+	barcode_size: parseInt(document.getElementById("barcode_size").value),
+	layout_mode: document.getElementById("layout_mode").value,
+	layout_reversed: document.getElementById("layout_reversed").value === "true",
+	dpi: parseInt(document.getElementById("dpi").value === 'custom'
+		? document.getElementById("custom_dpi").value
+		: document.getElementById("dpi").value),
+	sku_list: skuList,
+	x_offset: parseInt(document.getElementById("x_offset").value),
+	y_offset: parseInt(document.getElementById("y_offset").value),
+	truncate_templates: truncateTemplates,
+	};
+
+
+  const response = await fetch("/extras/barcode-label-generator/generate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+
+  if (response.ok) {
+    const blob = await response.blob();
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "labels.pdf";
+    link.click();
+  } else {
+    alert("Error generating labels");
+  }
+  document.getElementById("loadingOverlay").style.display = "none";
+}
+
+
+
+rngLengthInput.addEventListener("input", updatePreview);
+
+
+
+
+
+noBarcodeCheckbox.addEventListener("change", () => {
+const checked = noBarcodeCheckbox.checked;
+layoutSelect.value = checked ? "textonly" : "stacked";
+  if (noBarcodeCheckbox.checked) {
+    lastBarcodeType = barcodeSelect.value;
+    barcodeSelect.value = "none";
+    barcodeSelect.disabled = true;
+  } else {
+    barcodeSelect.value = lastBarcodeType || "code128";
+    barcodeSelect.disabled = false;
+  }
+});
+
+layoutSelect.addEventListener("change", () => {
+  toggleReverseButton(); 
+  toggleSizeSliders();
+  syncLayoutAndBarcodeState();
+  updatePreview();
+});
+
+document.getElementById("quantity").addEventListener("blur", () => {
+  quantityInput.value = sanitizePositiveInt(quantityInput.value);
+});
+
+
+rngLengthInput.addEventListener("blur", () => {
+    rngLengthInput.value = sanitizePositiveInt(rngLengthInput.value, 5);
+});
+
+
+
+document.getElementById("custom_dpi").addEventListener("input", function () {
+	const dpi = parseInt(this.value) || 300;
+	updateDpiQualityLabel(dpi);
+});
+
+charsetSelect.addEventListener('change', () => {
+	shouldRerollSkus = true;
+    updateExcludeSymbolsState();
+    updatePreview();
+});
+
+widthInput.addEventListener("input", updatePreview);
+heightInput.addEventListener("input", updatePreview);
+barcodeSelect.addEventListener("change", () => {
+  shouldRerollSkus = true;
+  enforceRngLengthRules();
+  togglePrefixSuffixAvailability();
+  autoScaleSizes();
+  updateLabelCount();
+  updatePreview();
+});
+manualSkuInput.addEventListener('input', () => {
+  updateSkuCounter();
+  updateLabelCount();
+  updatePreview();
+});
+
+excludeSymbolsCheckbox.addEventListener('change', () => {
+  shouldRerollSkus = true;
+  updatePreview();
+});
+
+
+rowsInput.addEventListener('input', () => {
+  shouldRerollSkus = true;
+  autoScaleSizes();
+  updateSkuCounter();
+  debouncedUpdatePreview();
+});
+columnsInput.addEventListener('input', () => {
+  shouldRerollSkus = true;
+  autoScaleSizes();
+  updateSkuCounter();
+  debouncedUpdatePreview();
+});
+manualPreviewCheckbox.addEventListener('change', () => {
+  updateQuantityInputState();
+  toggleManualSkuMode();
+  toggleGridOptions();
+  updateLabelCount();
+  updateSkuCounter();
+  updatePreview();
+});
+singleSkuCheckbox.addEventListener('change', () => {
+  updateLabelCount();
+  toggleGridOptions();
+  toggleManualSkuMode();
+  updatePreview();
+});
+
+quantityInput.addEventListener("blur", () => {
+    quantityInput.value = sanitizePositiveInt(quantityInput.value, 5);
+});
+document.getElementById("repeat_skus").addEventListener("change", () => {
+  updateQuantityInputState();
+  updateLabelCount();
+  updateSkuCounter();
+  updatePreview();
+});
+
+
+
+
+document.getElementById("label_units").addEventListener("change", updatePreview);
+document.getElementById("prefix").addEventListener("input", updatePreview);
+document.getElementById("suffix").addEventListener("input", updatePreview);
+document.getElementById("label_width").addEventListener("change", preventNegativeInput);
+document.getElementById("label_height").addEventListener("change", preventNegativeInput);
+document.getElementById("rng_length").addEventListener("input", preventNegativeInput);
+document.getElementById("use_manual_preview").addEventListener("change", toggleManualSkuMode);
+document.getElementById("text_size").addEventListener("input", updatePreview);
+document.getElementById("barcode_size").addEventListener("input", updatePreview);
+document.getElementById("dpi").addEventListener("change", toggleDpiInputs);
+document.getElementById("quantity").addEventListener("input", updateSkuCounter);
+document.getElementById("x_offset").addEventListener("change", updatePreview);
+document.getElementById("y_offset").addEventListener("change", updatePreview);
+
+</script>
+
+</body>
+</html>
